@@ -21,11 +21,16 @@ jobs:
         run: npm install -g newman
 
       - name: Run Postman Collection
-        run: newman run "API_Testing.postman_collection" --reporters cli,json,html --reporter-html-export newman-report.html
+        run: newman run "API Testing.postman_collection" \
+             --reporters cli,json,html \
+             --reporter-html-export newman-report.html
 
+      # ✅ New step to verify that the HTML report exists
+      - name: List files
+        run: ls -la
 
       - name: Upload report artifact
         uses: actions/upload-artifact@v4
         with:
-          name: postman-report          # <-- 2 extra spaces here
+          name: postman-report
           path: newman-report.html
