@@ -39,7 +39,7 @@ jobs:
 
       # 6️⃣ Upload HTML and JSON reports as artifacts
       - name: Upload Newman reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: newman-reports
           path: |
