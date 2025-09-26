@@ -24,7 +24,7 @@ jobs:
         run: newman run "API Testing.postman_collection" --reporters cli,json,html --reporter-html-export newman-report.html
 
       - name: Upload report artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: postman-report
+          name: postman-report          # <-- 2 extra spaces here
           path: newman-report.html
