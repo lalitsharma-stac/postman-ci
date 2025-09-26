@@ -1,36 +1,53 @@
-name: Scheduled Postman Run
+name: Run Postman Collection
 
 on:
-  schedule:
-    - cron: '0 9 * * *'
-  workflow_dispatch:
+  workflow_dispatch:  # Manual trigger from GitHub UI
 
 jobs:
-  run-postman:
+  newman-test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
+      # 1️⃣ Checkout the repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2️⃣ Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
+      # 3️⃣ Install Newman globally
       - name: Install Newman
-        run: npm install -g newman
+        run: npm install -g newman newman-reporter-html
 
-      - name: Run Postman Collection
-        run: newman run "API Testing.postman_collection" \
-             --reporters cli,json,html \
-             --reporter-html-export newman-report.html
-
-      # ✅ New step to verify that the HTML report exists
-      - name: List files
+      # 4️⃣ List repo files for debugging
+      - name: List repo files
         run: ls -la
 
-      - name: Upload report artifact
-        uses: actions/upload-artifact@v4
+      - name: List collections folder
+        run: ls -la collections
+
+      # 5️⃣ Run Postman collection
+      - name: Run Postman collection with Newman
+        run: |
+          newman run "collections/API_Testing.postman_collection.json" \
+            --reporters cli,json,html \
+            --reporter-html-export newman-report.html \
+            --reporter-json-export newman-report.json
+
+      # 6️⃣ Upload HTML and JSON reports as artifacts
+      - name: Upload Newman reports
+        uses: actions/upload-artifact@v3
         with:
-          name: postman-report
-          path: newman-report.html
+          name: newman-reports
+          path: |
+            newman-report.html
+            newman-report.json
+
+      # 7️⃣ Add clickable link in workflow summary
+      - name: Add report link to workflow summary
+        run: |
+          echo "### Newman HTML Report" >> $GITHUB_STEP_SUMMARY
+          echo "[Click here to download the report](newman-report.html)" >> $GITHUB_STEP_SUMMARY
